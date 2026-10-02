@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>深宮風雲錄：掌上山河</title>
+    
+    <!-- PWA iOS Specific Meta -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="深宮風雲錄">
+    <meta name="theme-color" content="#8B0000">
+
+    <style>
+        /* Modern CSS Reset & Palace Color Tokens */
+        :root {
+            --palace-red: #8B0000;
+            --palace-red-dark: #4A0000;
+            --palace-red-light: #B22222;
+            --gold-primary: #D4AF37;
+            --gold-light: #F7E7AD;
+            --gold-dark: #997A15;
+            --jade-green: #1B4D3E;
+            --bg-dark: #120707;
+            --bg-card: #1C0B0A;
+            --bg-card-light: #2A1210;
+            --paper-bg: #FAF3E0;
+            --paper-border: #C8B496;
+            --text-dark: #2B1810;
+            --text-light: #F5E6D3;
+            --text-gold: #F3E5AB;
+            --text-muted: #A38F78;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            font-family: "Songti TC", "Noto Serif CJK TC", "MingLiU", "Georgia", serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 50% 10%, #300A0A 0%, #120707 70%),
+                radial-gradient(circle at 80% 80%, rgba(212, 175, 55, 0.04) 0%, transparent 60%);
+        }
+
+        /* Palace Border Style */
+        .palace-border {
+            border: 2px solid var(--gold-primary);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2), inset 0 0 15px rgba(0, 0, 0, 0.8);
+            position: relative;
+            background: var(--bg-card);
+            border-radius: 6px;
+        }
+
+        .palace-border::before, .palace-border::after {
+            content: '❖';
+            position: absolute;
+            color: var(--gold-primary);
+            font-size: 11px;
+            background: var(--bg-dark);
+            padding: 0 2px;
+            line-height: 1;
+        }
+        .palace-border::before { top: -6px; left: -6px; }
+        .palace-border::after { bottom: -6px; right: -6px; }
+
+        /* Parchment Scroll Paper Style */
+        .parchment-panel {
+            background-color: var(--paper-bg);
+            background-image: radial-gradient(ellipse at center, rgba(255,255,255,0.6) 0%, rgba(235,220,195,0.85) 100%);
+            color: var(--text-dark);
+            border: 2px solid var(--gold-dark);
+            box-shadow: inset 0 0 25px rgba(139, 0, 0, 0.12), 0 8px 24px rgba(0, 0, 0, 0.7);
+            border-radius: 6px;
+        }
+
+        /* Buttons */
+        .btn-palace {
+            background: linear-gradient(180deg, var(--palace-red) 0%, var(--palace-red-dark) 100%);
+            color: var(--gold-light);
+            border: 1px solid var(--gold-primary);
+            padding: 10px 16px;
+            border-radius: 4px;
+            font-family: inherit;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-height: 40px;
+        }
+
+        .btn-palace:active:not(:disabled) {
+            transform: scale(0.97);
+        }
+
+        .btn-palace:hover:not(:disabled) {
+            background: linear-gradient(180deg, var(--palace-red-light) 0%, var(--palace-red) 100%);
+            border-color: #FFFFFF;
+            box-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
+        }
+
+        .btn-palace:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            filter: grayscale(80%);
+        }
+
+        .btn-gold {
+            background: linear-gradient(180deg, #E6C86E 0%, var(--gold-dark) 100%);
+            color: #1A0503;
+            border: 1px solid var(--gold-light);
+            font-weight: bold;
+        }
+
+        .btn-gold:hover:not(:disabled) {
+            background: linear-gradient(180deg, #FFF0B3 0%, var(--gold-primary) 100%);
+            box-shadow: 0 0 14px rgba(247, 231, 173, 0.7);
+        }
+
+        /* Main Game Layout */
+        .game-wrapper {
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+            padding: 8px;
+        }
+
+        header {
+            background: linear-gradient(180deg, #250B09 0%, #120504 100%);
+            border: 1px solid var(--gold-primary);
+            border-radius: 6px;
+            padding: 8px 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+            padding-bottom: 6px;
+            margin-bottom: 6px;
+        }
+
+        .brand-title {
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--gold-primary);
+            letter-spacing: 2px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .system-controls {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .pwa-badge {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            background: rgba(27, 77, 62, 0.8);
+            border: 1px solid #327E5D;
+            color: #A3E635;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+        }
+
+        @media (min-width: 640px) {
+            .stats-grid {
+                grid-template-columns: repeat(8, 1fr);
+            }
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.65);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 4px 2px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            display: block;
+        }
+
+        .stat-value {
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--gold-light);
+        }
+
+        /* Navigation Tabs */
+        nav {
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            min-width: 80px;
+            padding: 8px 4px;
+            background: #140705;
+            color: var(--text-muted);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(180deg, var(--palace-red) 0%, var(--palace-red-dark) 100%);
+            color: var(--gold-light);
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Content Display Panels */
+        .tab-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 480px;
+        }
+
+        .story-container {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .story-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dashed rgba(139, 0, 0, 0.3);
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+
+        .speaker-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .speaker-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px solid var(--gold-dark);
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+        }
+
+        .speaker-name {
+            font-weight: bold;
+            font-size: 16px;
+            color: var(--palace-red-dark);
+        }
+
+        .scene-location {
+            font-size: 11px;
+            color: #6A4A35;
+        }
+
+        .story-body {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #1A0A03;
+            text-align: justify;
+            white-space: pre-line;
+            min-height: 160px;
+        }
+
+        .story-choices {
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .choice-btn {
+            background: linear-gradient(180deg, #FAF4E8 0%, #E8D8C3 100%);
+            color: var(--text-dark);
+            border: 1px solid var(--paper-border);
+            padding: 12px 14px;
+            border-radius: 4px;
+            text-align: left;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.12);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .choice-btn:hover:not(:disabled) {
+            background: linear-gradient(180deg, #FFFFFF 0%, #EEDEC8 100%);
+            border-color: var(--palace-red);
+            box-shadow: 0 0 10px rgba(139, 0, 0, 0.3);
+            transform: translateX(4px);
+        }
+
+        /* Dungeon Cards */
+        .minigames-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        @media (min-width: 640px) {
+            .minigames-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .minigame-card {
+            background: var(--bg-card);
+            border: 1px solid var(--gold-dark);
+            border-radius: 6px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .minigame-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: var(--gold-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            padding-bottom: 6px;
+        }
+
+        .minigame-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Generic Modals */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(3px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+        }
+
+        .modal-content {
+            max-width: 550px;
+            width: 100%;
+            border-radius: 6px;
+            padding: 16px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 200;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .toast-msg {
+            background: rgba(25, 10, 8, 0.95);
+            border: 1px solid var(--gold-primary);
+            color: var(--gold-light);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8);
+            animation: toastFade 2.5s forwards ease-out;
+        }
+
+        @keyframes toastFade {
+            0% { opacity: 0; transform: translateY(-10px); }
+            15% { opacity: 1; transform: translateY(0); }
+            80% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-15px); }
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- Toast Floating Container -->
+    <div id="toast-container"></div>
+
+    <div class="game-wrapper">
+        <header>
+            <div class="header-top">
+                <div class="brand-title">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                    深宮風雲錄：掌上山河
+                </div>
+                <div class="system-controls">
+                    <span id="pwa-status-badge" class="pwa-badge">📱 WEB</span>
+                    <button id="btn-install-pwa" class="btn-palace hidden" style="padding: 3px 8px; font-size: 11px; background: #2b1b04; border-color: var(--gold-primary);">
+                        📥 安裝 App
+                    </button>
+                    <button id="btn-sound" class="btn-palace" style="padding: 3px 8px; font-size: 11px;">
+                        🔊 音樂
+                    </button>
+                    <button onclick="game.openSaveModal()" class="btn-palace" style="padding: 3px 8px; font-size: 11px;">
+                        💾 存讀檔
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dynamic Stats Bar -->
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <span class="stat-label">👑 位分</span>
+                    <span id="stat-rank" class="stat-value">【秀女】</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">🪙 銀兩</span>
+                    <span id="stat-silver" class="stat-value">100 兩</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">🧠 心機</span>
+                    <span id="stat-xinjie" class="stat-value">20</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">📜 寵愛</span>
+                    <span id="stat-chongai" class="stat-value">20</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">🏛️ 勢力</span>
+                    <span id="stat-shili" class="stat-value">20</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">❤️ 人心</span>
+                    <span id="stat-renxin" class="stat-value">30</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">🩸 健康</span>
+                    <span id="stat-health" class="stat-value">100</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">🖤 黑化</span>
+                    <span id="stat-heihua" class="stat-value">0</span>
+                </div>
+            </div>
+        </header>
+
+        <nav>
+            <button onclick="game.switchTab('story')" id="tab-btn-story" class="nav-btn active">📜 帝闕主線</button>
+            <button onclick="game.switchTab('dungeons')" id="tab-btn-dungeons" class="nav-btn">⚔️ 六宮副本</button>
+            <button onclick="game.switchTab('npcs')" id="tab-btn-npcs" class="nav-btn">👑 人物圖鑑</button>
+            <button onclick="game.switchTab('inventory')" id="tab-btn-inventory" class="nav-btn">📦 珍品秘辛</button>
+            <button onclick="game.switchTab('logs')" id="tab-btn-logs" class="nav-btn">📖 史冊日誌</button>
+        </nav>
+
+        <main class="tab-content">
+            <div id="tab-content-story" class="story-container parchment-panel">
+                <div>
+                    <div class="story-header">
+                        <div class="speaker-box">
+                            <div id="story-speaker-avatar" class="speaker-avatar">👵</div>
+                            <div>
+                                <div id="story-speaker-name" class="speaker-name">教引姑姑</div>
+                                <div id="story-location" class="scene-location">地點: 紫禁城 · 體和殿</div>
+                            </div>
+                        </div>
+                        <div id="story-chapter-badge" style="font-size: 11px; font-weight: bold; padding: 2px 8px; background: var(--palace-red); color: #fff; border-radius: 10px;">
+                            序章：家世擇定
+                        </div>
+                    </div>
+
+                    <div id="story-text" class="story-body">
+                        載入宮廷故事點...
+                    </div>
+                </div>
+
+                <div class="story-choices" id="story-choices-container">
+                    <!-- Dynamic choices populated via JS -->
+                </div>
+            </div>
+
+            <!-- Dungeons System Tab -->
+            <div id="tab-content-dungeons" class="hidden minigames-grid">
+                <!-- Dungeon 1: Pharmacy Alchemy -->
+                <div class="minigame-card palace-border">
+                    <div>
+                        <div class="minigame-title">
+                            <span>🌿 太醫院密配香藥</span>
+                            <span style="font-size: 10px; color: #a3e635;">藥房煉製</span>
+                        </div>
+                        <p class="minigame-desc">搜集藏紅花、麝香、野山蔘等珍稀藥材，煉製養顏膏、百解丹與絕嗣散。</p>
+                    </div>
+                    <button onclick="game.switchTab('inventory')" class="btn-palace w-full">前往藥房煉丹台</button>
+                </div>
+
+                <!-- Dungeon 2: Garden Exploration -->
+                <div class="minigame-card palace-border">
+                    <div>
+                        <div class="minigame-title">
+                            <span>🌙 御花園夜遊奇遇</span>
+                            <span style="font-size: 10px; color: #38bdf8;">夜探試煉</span>
+                        </div>
+                        <p class="minigame-desc">提燈夜巡御花園，隨機觸發帝王偶遇、聽聞宮闈秘辛或拾得珍品。</p>
+                    </div>
+                    <button onclick="game.startGardenNight()" class="btn-palace w-full">踏入夜色巡遊</button>
+                </div>
+
+                <!-- Dungeon 3: Cold Palace Investigation -->
+                <div class="minigame-card palace-border">
+                    <div>
+                        <div class="minigame-title">
+                            <span>🔍 冷宮舊案搜查解謎</span>
+                            <span style="font-size: 10px; color: #facc15;">密函線索</span>
+                        </div>
+                        <p class="minigame-desc">深入冷宮廢墟，搜尋當年先妃冤案線索，獲取足以威脅敵對嬪妃的密函！</p>
+                    </div>
+                    <button onclick="game.startColdPalaceInvestigate()" class="btn-palace w-full">搜查冷宮舊案</button>
+                </div>
+
+                <!-- Dungeon 4: Royal Banquet Riddles -->
+                <div class="minigame-card palace-border">
+                    <div>
+                        <div class="minigame-title">
+                            <span>🏮 皇家宴會詩詞酒令</span>
+                            <span style="font-size: 10px; color: #f43f5e;">帝心大考</span>
+                        </div>
+                        <p class="minigame-desc">參加宮廷千叟宴與中秋詩會，對答古典詩詞與帝王心術，獲巨額賞賜。</p>
+                    </div>
+                    <button onclick="game.startBanquetRiddles()" class="btn-palace w-full">進入皇家詩會</button>
+                </div>
+            </div>
+
+            <!-- NPCs Tab -->
+            <div id="tab-content-npcs" class="hidden" style="display: flex; flex-direction: column; gap: 10px;">
+                <div class="palace-border" style="padding: 12px;">
+                    <h3 style="color: var(--gold-primary); font-size: 15px; margin-bottom: 8px;">👑 後宮重要人物圖鑑與好感度</h3>
+                    <div id="npc-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px;">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventory Tab -->
+            <div id="tab-content-inventory" class="hidden" style="display: grid; grid-template-columns: 1fr; gap: 10px;">
+                <div class="palace-border" style="padding: 12px;">
+                    <h3 style="color: var(--gold-primary); font-size: 15px; margin-bottom: 8px; display: flex; justify-content: space-between;">
+                        <span>📦 珍品行囊</span>
+                        <span id="inv-count" style="font-size: 11px; color: var(--text-muted);">容量: 0</span>
+                    </h3>
+                    <div id="inventory-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; min-height: 100px;">
+                        <!-- Items rendered by JS -->
+                    </div>
+                </div>
+
+                <div class="palace-border" style="padding: 12px; background: #200D08;">
+                    <h3 style="color: var(--gold-primary); font-size: 15px; margin-bottom: 8px;">⚗️ 太醫院配藥工坊</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;" id="alchemy-recipes">
+                        <!-- Recipes rendered by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logs Tab -->
+            <div id="tab-content-logs" class="hidden">
+                <div class="palace-border" style="padding: 12px; min-height: 380px; display: flex; flex-direction: column;">
+                    <h3 style="color: var(--gold-primary); font-size: 15px; margin-bottom: 8px; border-bottom: 1px solid rgba(212,175,55,0.3); padding-bottom: 4px;">📖 深宮歷史日誌</h3>
+                    <div id="logs-container" style="flex: 1; overflow-y: auto; font-size: 12px; line-height: 1.6; display: flex; flex-direction: column; gap: 6px;">
+                        <!-- Logs rendered by JS -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Save/Load Modal -->
+    <div id="modal-saveload" class="modal-overlay hidden">
+        <div class="modal-content palace-border">
+            <h3 style="color: var(--gold-primary); font-size: 16px; margin-bottom: 12px; border-bottom: 1px solid var(--gold-dark); padding-bottom: 4px;">💾 宮闈存檔與讀檔</h3>
+            <div id="save-slots" style="display: flex; flex-direction: column; gap: 8px;"></div>
+            <div style="display: flex; justify-content: space-between; margin-top: 14px;">
+                <div>
+                    <button onclick="game.exportSaveData()" class="btn-palace" style="font-size: 11px;">📤 匯出存檔</button>
+                    <button onclick="game.importSaveData()" class="btn-palace" style="font-size: 11px;">📥 匯入存檔</button>
+                </div>
+                <button onclick="game.closeModals()" class="btn-palace">關閉</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PWA Installation Instructions Modal -->
+    <div id="modal-pwa-guide" class="modal-overlay hidden">
+        <div class="modal-content parchment-panel" style="text-align: center;">
+            <div style="font-size: 36px; margin-bottom: 6px;">📱</div>
+            <h3 style="color: var(--palace-red-dark); font-size: 18px; margin-bottom: 8px;">將《深宮風雲錄》安裝至桌面</h3>
+            <p id="pwa-guide-text" style="font-size: 13px; line-height: 1.6; color: var(--text-dark); margin-bottom: 14px;">
+                點擊下方按鈕即可將遊戲安裝至您的手機/電腦主畫面，享有全螢幕獨立 App 與離線暢玩體驗！
+            </p>
+            <div id="pwa-action-container">
+                <button id="pwa-install-confirm-btn" class="btn-palace btn-gold" style="padding: 10px 24px; font-size: 14px;">立即安裝 PWA App</button>
+            </div>
+            <div style="margin-top: 12px;">
+                <button onclick="game.closeModals()" class="btn-palace" style="padding: 6px 16px; font-size: 11px;">稍後再說</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ending Display Modal -->
+    <div id="modal-ending" class="modal-overlay hidden">
+        <div class="modal-content parchment-panel" style="text-align: center;">
+            <div style="font-size: 44px; margin-bottom: 6px;">👑</div>
+            <p style="font-size: 11px; font-weight: bold; color: var(--palace-red-dark); letter-spacing: 2px;">―― 終局天命 ――</p>
+            <h2 id="ending-title" style="font-size: 24px; color: var(--palace-red); margin: 6px 0;">母儀天下皇后</h2>
+            <div id="ending-badge" style="display: inline-block; padding: 2px 12px; background: var(--palace-red-dark); color: var(--gold-light); font-size: 11px; border-radius: 10px; margin-bottom: 12px;">
+                【正統結局】
+            </div>
+            <p id="ending-desc" style="font-size: 13px; line-height: 1.8; text-align: justify; margin-bottom: 16px;">
+                結局敘述...
+            </p>
+            <button onclick="game.restartGame()" class="btn-palace btn-gold" style="padding: 10px 24px; font-size: 14px;">🔄 重開新局 · 重新爭寵</button>
+        </div>
+    </div>
+
+    <script>
+        /* =========================================================
+         * 1. Dynamic PWA Web App Manifest & Service Worker Setup
+         * ========================================================= */
+        (function setupPWA() {
+            try {
+                // Generate Dynamic Web App Manifest Data URI
+                const manifest = {
+                    name: "深宮風雲錄：掌上山河",
+                    short_name: "深宮風雲錄",
+                    description: "宮鬥題材 PWA 文字冒險遊戲",
+                    start_url: "./",
+                    display: "standalone",
+                    orientation: "portrait",
+                    background_color: "#120707",
+                    theme_color: "#8B0000",
+                    icons: [
+                        {
+                            src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192' viewBox='0 0 100 100'><rect width='100' height='100' fill='%238B0000'/><circle cx='50' cy='50' r='38' fill='%23D4AF37'/><text x='50' y='62' font-size='36' text-anchor='middle' fill='%23120707' font-family='serif' font-weight='bold'>宮</text></svg>",
+                            sizes: "192x192",
+                            type: "image/svg+xml"
+                        },
+                        {
+                            src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 100 100'><rect width='100' height='100' fill='%238B0000'/><circle cx='50' cy='50' r='42' fill='%23D4AF37'/><text x='50' y='64' font-size='42' text-anchor='middle' fill='%23120707' font-family='serif' font-weight='bold'>宮</text></svg>",
+                            sizes: "512x512",
+                            type: "image/svg+xml"
+                        }
+                    ]
+                };
+
+                const manifestString = JSON.stringify(manifest);
+                const manifestBlob = new Blob([manifestString], { type: 'application/json' });
+                const manifestURL = URL.createObjectURL(manifestBlob);
+                
+                const link = document.createElement('link');
+                link.rel = 'manifest';
+                link.href = manifestURL;
+                document.head.appendChild(link);
+
+                // Inline Service Worker setup via Blob
+                if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
+                    const swCode = `
+                        const CACHE_NAME = 'palace-pwa-v2';
+                        self.addEventListener('install', (e) => {
+                            self.skipWaiting();
+                        });
+                        self.addEventListener('activate', (e) => {
+                            e.waitUntil(self.clients.claim());
+                        });
+                        self.addEventListener('fetch', (e) => {
+                            e.respondWith(
+                                caches.match(e.request).then((response) => {
+                                    return response || fetch(e.request).catch(() => caches.match('./'));
+                                })
+                            );
+                        });
+                    `;
+                    const swBlob = new Blob([swCode], { type: 'text/javascript' });
+                    const swUrl = URL.createObjectURL(swBlob);
+                    
+                    navigator.serviceWorker.register(swUrl)
+                        .then(() => console.log('Palace PWA Service Worker Registered'))
+                        .catch(err => console.warn('PWA SW Register skipped:', err));
+                }
+            } catch (err) {
+                console.warn('PWA Initialization skipped due to environment limits:', err);
+            }
+        })();
+
+        class PalaceAudioEngine {
+            constructor() {
+                this.ctx = null;
+                this.enabled = true;
+                this.bgmTimer = null;
+                this.notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25]; // Traditional Pentatonic
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContext();
+                }
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            toggleSound() {
+                this.enabled = !this.enabled;
+                if (!this.enabled) {
+                    this.stopBGM();
+                } else {
+                    this.startBGM();
+                }
+                return this.enabled;
+            }
+
+            playGuzhengPluck(freq) {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, now);
+
+                // Guzheng pluck envelope
+                gain.gain.setValueAtTime(0.18, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start(now);
+                osc.stop(now + 1.2);
+            }
+
+            startBGM() {
+                if (!this.enabled || this.bgmTimer) return;
+                this.init();
+                let step = 0;
+                this.bgmTimer = setInterval(() => {
+                    if (!this.enabled) return;
+                    const note = this.notes[Math.floor(Math.random() * this.notes.length)];
+                    this.playGuzhengPluck(note);
+                    step++;
+                }, 1400);
+            }
+
+            stopBGM() {
+                if (this.bgmTimer) {
+                    clearInterval(this.bgmTimer);
+                    this.bgmTimer = null;
+                }
+            }
+
+            playClick() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(450, now);
+                osc.frequency.exponentialRampToValueAtTime(180, now + 0.04);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.04);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.04);
+            }
+
+            playChime(isGood = true) {
+                if (!this.enabled) return;
+                this.init();
+                const freqs = isGood ? [523.25, 659.25, 783.99] : [220.00, 196.00, 164.81];
+                freqs.forEach((f, i) => {
+                    setTimeout(() => this.playGuzhengPluck(f), i * 120);
+                });
+            }
+        }
+
+        const RANKS = [
+            '【秀女】', '【答應】', '【常在】', '【貴人】', '【嬪位】', '【妃位】', '【貴妃】', '【皇貴妃】', '【皇后】', '【女帝】'
+        ];
+
+        const ITEMS_DB = {
+            canghonghua: { name: '藏紅花', icon: '🌺', desc: '活血之名藥，亦是用毒關鍵成分。' },
+            shexiang: { name: '麝香', icon: '🌸', desc: '奇香無比，多用於後宮香道或暗害。' },
+            renshen: { name: '野山蔘', icon: '🪵', desc: '大補元氣的名貴藥材，延年益壽。' },
+            zhenzhufen: { name: '南海珍珠粉', icon: '✨', desc: '養顏敷面之精品。' },
+            
+            yangyangao: { name: '珍珠養顏膏', icon: '🪞', desc: '使用後容貌大增，人心+15。', effect: { renxin: 15 } },
+            bidudan: { name: '百草避毒丸', icon: '🧪', desc: '可防下毒陷害，健康+20，威望+10。', effect: { health: 20, weiwang: 10 } },
+            juesisan: { name: '絕嗣暗香散', icon: '☠️', desc: '劇毒之物，可用於反殺敵對嬪妃。' },
+            mihan: { name: '前朝密函', icon: '✉️', desc: '記錄華貴妃家族收賄與後宮牽連之鐵證。' }
+        };
+
+        const NPCS_DB = {
+            emperor: { name: '乾隆帝', avatar: '👑', role: '當朝帝王 · 嚴肅多疑', favor: 20, desc: '掌控天下大權，喜好文采才藝。' },
+            empress: { name: '富察皇后', avatar: '👸', role: '中宮皇后 · 端莊城府', favor: 30, desc: '掌管六宮，深諳權謀之術。' },
+            huaguifei: { name: '華貴妃', avatar: '💃', role: '掌權貴妃 · 囂張跋扈', favor: 10, desc: '家族兵權顯赫，心狠手辣。' },
+            shufei: { name: '淑妃', avatar: '🪷', role: '清高嬪妃 · 精通琴棋', favor: 40, desc: '不喜爭寵，但暗藏勢力。' },
+            cuihuan: { name: '翠環', avatar: '👧', role: '忠臣宮女 · 貼心侍奉', favor: 80, desc: '從小服侍你的打手與情報員。' }
+        };
+
+        const STORY_NODES = {
+            's_origin': {
+                speaker: '教引姑姑',
+                avatar: '👵',
+                location: '體和殿前',
+                chapter: '序章：家世擇定',
+                text: '乾隆三年春，大選展開。教引姑姑手持名冊問道：「秀女請報上家世門第，宮中一言一行皆牽連家族。」',
+                choices: [
+                    { text: '出身【文官清流】：父親乃正三品翰林學士。', target: 's_0_1', effect: { xinjie: 15, renxin: 10, silver: 100 }, toast: '文官出身：心機+15，人心+10' },
+                    { text: '出身【將門之後】：父親乃九門提督重臣。', target: 's_0_1', effect: { shili: 20, health: 10, silver: 150 }, toast: '將門出身：勢力+20，健康+10' },
+                    { text: '出身【江南豪商】：家族富可敵國。', target: 's_0_1', effect: { silver: 300, renxin: 10, xinjie: 5 }, toast: '豪商出身：獲得 300 兩白銀！' }
+                ]
+            },
+            's_0_1': {
+                speaker: '乾隆帝',
+                avatar: '👑',
+                location: '體和殿正殿',
+                chapter: '第一章：殿選封號',
+                text: '端坐龍椅上的皇帝微抬眼眸：「蘇氏，若後宮有嬪妃生事爭寵，你當如何處之？」',
+                choices: [
+                    { text: '溫和言道：「以和為貴，感化姐妹，解陛下後顧之憂。」', target: 's_1_1', effect: { chongai: 15, renxin: 10 }, rankIdx: 2, toast: '帝心大悅！封為【常在】' },
+                    { text: '言辭嚴肅：「恪守宮規，絕不姑息，以正六宮之風。」', target: 's_1_1', effect: { weiwang: 15, xinjie: 5 }, rankIdx: 2, toast: '嚴明宮規！封為【常在】' },
+                    { text: '巧妙回答：「臣妾全憑皇上與皇后娘娘裁決。」', target: 's_1_1', effect: { xinjie: 15, shili: 5 }, rankIdx: 2, toast: '城府深沉！封為【常在】' }
+                ]
+            },
+            's_1_1': {
+                speaker: '翠環',
+                avatar: '👧',
+                location: '碧翠宮內室',
+                chapter: '第一章：麝香陷阱',
+                text: '入宮冊封【常在】，賜住碧翠宮。當晚華貴妃派人送來「名貴麝香香粉」，同期入宮的安答應前來拜訪。',
+                choices: [
+                    { text: '收下香粉但絕不使用，並熱情接待安答應結盟。', target: 's_2_1', effect: { xinjie: 10, renxin: 10 }, itemsAdd: ['shexiang'], toast: '獲得藥材【麝香】！人心+10' },
+                    { text: '當場謝絕香粉，稱自己對香氣過敏。', target: 's_2_1', effect: { weiwang: 10, xinjie: 5 }, toast: '展現傲骨！威望+10' }
+                ]
+            },
+            's_2_1': {
+                speaker: '敬事房太監',
+                avatar: '👴',
+                location: '養心殿',
+                chapter: '第二章：帝心難測',
+                text: '敬事房呈綠頭牌——今夜皇上召你侍寢。養心殿內，皇帝正在審閱奏折。',
+                choices: [
+                    { text: '【需要心機≥25】主動研墨，提出獨到的治水見解。', req: { xinjie: 25 }, target: 's_3_1', effect: { chongai: 25 }, rankIdx: 3, toast: '才驚帝王！晉升為【貴人】' },
+                    { text: '溫柔獻上親自煎熬的野山蔘湯。', target: 's_3_1', effect: { chongai: 15, health: 10 }, rankIdx: 3, toast: '體貼入微！晉升為【貴人】' }
+                ]
+            },
+            's_3_1': {
+                speaker: '華貴妃',
+                avatar: '💃',
+                location: '御花園冷香亭',
+                chapter: '第三章：巫蠱風暴',
+                text: '華貴妃指使內務府搜查你的房間，竟搜出詛咒皇后的「巫蠱小人」！華貴妃指控你大逆不道！',
+                choices: [
+                    { text: '【需要道具：前朝密函】拿出密函反指華貴妃家族收賄！', reqItem: 'mihan', target: 's_4_1', effect: { xinjie: 20, weiwang: 20 }, rankIdx: 5, toast: '密函反殺！晉封【妃位】' },
+                    { text: '【需要黑化≥15】當場將巫蠱小人栽贓給華貴妃宮女！', req: { heihua: 15 }, target: 's_4_1', effect: { xinjie: 20, heihua: 10 }, rankIdx: 5, toast: '栽贓反將一軍！晉封【妃位】' },
+                    { text: '無法洗清冤屈，被押入冷宮。', target: 's_ending_lenggong' }
+                ]
+            },
+            's_4_1': {
+                speaker: '富察皇后',
+                avatar: '👸',
+                location: '長春宮',
+                chapter: '第四章：奪嫡前夜',
+                text: '帝王重病，朝堂九門提督與王爺密謀政變！皇后請你共同決定大清國本天命！',
+                choices: [
+                    { text: '【需要勢力≥60且人心≥50】聯合朝臣發動宮變，冊封皇后！', req: { shili: 60, renxin: 50 }, target: 's_ending_queen', rankIdx: 8 },
+                    { text: '【需要心機≥70且黑化≥25】毒殺政敵，扶持幼帝，垂簾聽政！', req: { xinjie: 70, heihua: 25 }, target: 's_ending_regent', rankIdx: 7 },
+                    { text: '【需要心機≥80】安排假死金蟬脫殼，攜財寶逃離紫禁城！', req: { xinjie: 80 }, target: 's_ending_escape' },
+                    { text: '不參與政變，隨新帝入壽康宮養老。', target: 's_ending_taifei' }
+                ]
+            },
+
+            /* Endings */
+            's_ending_queen': { isEnding: true, title: '母儀天下賢後', badge: '【正統結局】', desc: '你憑藉卓越的智慧、仁厚的心胸與深厚的勢力，登頂皇后寶座，母儀天下，萬世流芳！' },
+            's_ending_regent': { isEnding: true, title: '獨攬大權一代女帝', badge: '【霸者結局】', desc: '先帝駕崩後，你扶持幼帝登基，攬天下大權於一手，成為掌控大清朝政長達三十年的幕後女帝！' },
+            's_ending_escape': { isEnding: true, title: '假死遁世江湖', badge: '【隱士結局】', desc: '你看透了深宮爾虞我詐，安排假死金蟬脫殼，帶著萬貫家財遊歷江南名山大川，逍遙一生。' },
+            's_ending_taifei': { isEnding: true, title: '安穩太妃', badge: '【平淡結局】', desc: '你遠離權勢紛爭，隨新帝登基入壽康宮安享晚年。' },
+             me_ending_lenggong: { isEnding: true, title: '冷宮幽禁', badge: '【悲慘結局】', desc: '遭受奸人陷害，廢去封號幽禁冷宮，最終在一片淒涼中死去...' }
+        };
+
+        const POETRY_QUIZ = [
+            { q: '「東風夜放花千樹，更吹落，星如雨。」出自哪位詞人？', opts: ['李清照', '辛棄疾', '蘇軾', '歐陽修'], ans: 1 },
+            { q: '宮廷帝王心術中，何謂「制衡之道」？', opts: ['一家獨大', '兩虎相鬥，保持平衡', '任人唯親', '放任不管'], ans: 1 },
+            { q: '「採菊東籬下，悠然見南山」表達了何種心境？', opts: ['熱衷名利', '隱逸超然', '憂國憂民', '孤單寂寞'], ans: 1 }
+        ];
+
+        class PalaceGameController {
+            constructor() {
+                this.audio = new PalaceAudioEngine();
+                this.deferredInstallPrompt = null;
+                this.state = {
+                    rankIdx: 0,
+                    silver: 100,
+                    stats: { xinjie: 20, chongai: 20, shili: 20, renxin: 30, health: 100, heihua: 0 },
+                    inventory: ['canghonghua', 'zhenzhufen'],
+                    npcs: JSON.parse(JSON.stringify(NPCS_DB)),
+                    currentSceneId: 's_origin',
+                    historyLogs: [],
+                    activeTab: 'story'
+                };
+            }
+
+            init() {
+                this.setupPWAInstallPrompt();
+                this.loadScene(this.state.currentSceneId);
+                this.updateUI();
+
+                // Sound toggle listener
+                document.getElementById('btn-sound').onclick = () => {
+                    const isPlaying = this.audio.toggleSound();
+                    document.getElementById('btn-sound').innerText = isPlaying ? '🔊 音樂' : '🔇 靜音';
+                };
+            }
+
+            setupPWAInstallPrompt() {
+                const btnInstall = document.getElementById('btn-install-pwa');
+                const pwaStatus = document.getElementById('pwa-status-badge');
+
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    this.deferredInstallPrompt = e;
+                    btnInstall.classList.remove('hidden');
+                    pwaStatus.innerText = '📲 可安裝 App';
+
+                    btnInstall.onclick = () => this.showPwaGuideModal();
+                });
+
+                window.addEventListener('appinstalled', () => {
+                    this.deferredInstallPrompt = null;
+                    btnInstall.classList.add('hidden');
+                    pwaStatus.innerText = '⚡ PWA App';
+                    this.showToast('感謝安裝《深宮風雲錄》獨立 App！', true);
+                });
+            }
+
+            showPwaGuideModal() {
+                this.audio.playClick();
+                const modal = document.getElementById('modal-pwa-guide');
+                const confirmBtn = document.getElementById('pwa-install-confirm-btn');
+                modal.classList.remove('hidden');
+
+                confirmBtn.onclick = () => {
+                    if (this.deferredInstallPrompt) {
+                        this.deferredInstallPrompt.prompt();
+                        this.deferredInstallPrompt.userChoice.then((choiceResult) => {
+                            if (choiceResult.outcome === 'accepted') {
+                                console.log('User accepted the PWA install prompt');
+                            }
+                            this.deferredInstallPrompt = null;
+                            modal.classList.add('hidden');
+                        });
+                    }
+                };
+            }
+
+            showToast(msg, isGood = true) {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = 'toast-msg';
+                toast.innerText = msg;
+                container.appendChild(toast);
+                setTimeout(() => toast.remove(), 2500);
+                this.audio.playChime(isGood);
+            }
+
+            switchTab(tabName) {
+                this.audio.playClick();
+                this.state.activeTab = tabName;
+                ['story', 'dungeons', 'npcs', 'inventory', 'logs'].forEach(t => {
+                    const btn = document.getElementById(`tab-btn-${t}`);
+                    const content = document.getElementById(`tab-content-${t}`);
+                    if (t === tabName) {
+                        btn.classList.add('active');
+                        content.classList.remove('hidden');
+                    } else {
+                        btn.classList.remove('active');
+                        content.classList.add('hidden');
+                    }
+                });
+
+                if (tabName === 'npcs') this.renderNPCs();
+                if (tabName === 'inventory') this.renderInventory();
+                if (tabName === 'logs') this.renderLogs();
+            }
+
+            loadScene(sceneId) {
+                const scene = STORY_NODES[sceneId];
+                if (!scene) return;
+
+                this.state.currentSceneId = sceneId;
+
+                if (scene.isEnding) {
+                    this.showEndingModal(scene);
+                    return;
+                }
+
+                document.getElementById('story-speaker-name').innerText = scene.speaker;
+                document.getElementById('story-speaker-avatar').innerText = scene.avatar;
+                document.getElementById('story-location').innerText = `地點: ${scene.location}`;
+                document.getElementById('story-chapter-badge').innerText = scene.chapter;
+                document.getElementById('story-text').innerText = scene.text;
+
+                // Record history log
+                this.state.historyLogs.push({
+                    chapter: scene.chapter,
+                    text: `【${scene.speaker}】${scene.text.substring(0, 36)}...`
+                });
+
+                const choicesBox = document.getElementById('story-choices-container');
+                choicesBox.innerHTML = '';
+
+                scene.choices.forEach(c => {
+                    const btn = document.createElement('button');
+                    btn.className = 'choice-btn';
+
+                    let canSelect = true;
+                    let reqMsgs = [];
+
+                    if (c.req) {
+                        for (let k in c.req) {
+                            if ((this.state.stats[k] || 0) < c.req[k]) {
+                                canSelect = false;
+                                reqMsgs.push(`需要 ${this.getStatName(k)} ≥ ${c.req[k]}`);
+                            }
+                        }
+                    }
+
+                    if (c.reqItem && !this.state.inventory.includes(c.reqItem)) {
+                        canSelect = false;
+                        const itemObj = ITEMS_DB[c.reqItem];
+                        reqMsgs.push(`需要道具: ${itemObj ? itemObj.name : c.reqItem}`);
+                    }
+
+                    btn.disabled = !canSelect;
+                    btn.innerHTML = `
+                        <span>✦ ${c.text}</span>
+                        ${reqMsgs.length > 0 ? `<span style="font-size: 10px; color: var(--palace-red-light);">(${reqMsgs.join(', ')})</span>` : ''}
+                    `;
+
+                    btn.onclick = () => {
+                        this.audio.playClick();
+                        this.applyChoice(c);
+                    };
+
+                    choicesBox.appendChild(btn);
+                });
+            }
+
+            applyChoice(choice) {
+                if (choice.effect) {
+                    for (let k in choice.effect) {
+                        if (k === 'silver') {
+                            this.state.silver += choice.effect[k];
+                        } else {
+                            this.state.stats[k] = Math.max(0, (this.state.stats[k] || 0) + choice.effect[k]);
+                        }
+                    }
+                }
+
+                if (choice.rankIdx !== undefined) {
+                    this.state.rankIdx = choice.rankIdx;
+                }
+
+                if (choice.itemsAdd) {
+                    choice.itemsAdd.forEach(id => {
+                        if (!this.state.inventory.includes(id)) this.state.inventory.push(id);
+                    });
+                }
+
+                if (choice.toast) this.showToast(choice.toast, true);
+
+                this.updateUI();
+                if (choice.target) this.loadScene(choice.target);
+            }
+
+            getStatName(k) {
+                const names = { xinjie: '心機', chongai: '寵愛', shili: '勢力', renxin: '人心', health: '健康', heihua: '黑化' };
+                return names[k] || k;
+            }
+
+            updateUI() {
+                document.getElementById('stat-rank').innerText = RANKS[this.state.rankIdx] || '【秀女】';
+                document.getElementById('stat-silver').innerText = `${this.state.silver} 兩`;
+                document.getElementById('stat-xinjie').innerText = this.state.stats.xinjie;
+                document.getElementById('stat-chongai').innerText = this.state.stats.chongai;
+                document.getElementById('stat-shili').innerText = this.state.stats.shili;
+                document.getElementById('stat-renxin').innerText = this.state.stats.renxin;
+                document.getElementById('stat-health').innerText = this.state.stats.health;
+                document.getElementById('stat-heihua').innerText = this.state.stats.heihua;
+            }
+
+            renderNPCs() {
+                const grid = document.getElementById('npc-grid');
+                grid.innerHTML = '';
+                for (let k in this.state.npcs) {
+                    const npc = this.state.npcs[k];
+                    const card = document.createElement('div');
+                    card.className = 'palace-border';
+                    card.style.padding = '8px';
+                    card.style.background = '#140605';
+                    card.innerHTML = `
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                            <div style="font-size:24px;">${npc.avatar}</div>
+                            <div>
+                                <div style="font-weight:bold; font-size:13px; color:var(--gold-light);">${npc.name}</div>
+                                <div style="font-size:10px; color:var(--text-muted);">${npc.role}</div>
+                            </div>
+                        </div>
+                        <div style="font-size:11px; color:#D1C2A5; margin-bottom:6px;">好感度: <b style="color:var(--gold-primary);">${npc.favor}</b>/100</div>
+                        <p style="font-size:10px; color:var(--text-muted); line-height:1.4;">${npc.desc}</p>
+                        <button onclick="game.interactNPC('${k}')" class="btn-palace w-full" style="margin-top:8px; padding:4px; font-size:11px;">🎁 贈禮拜訪 (+好感)</button>
+                    `;
+                    grid.appendChild(card);
+                }
+            }
+
+            interactNPC(npcKey) {
+                if (this.state.silver < 30) {
+                    this.showToast('銀兩不足 30 兩，無法準備拜訪薄禮！', false);
+                    return;
+                }
+                this.state.silver -= 30;
+                this.state.npcs[npcKey].favor = Math.min(100, this.state.npcs[npcKey].favor + 10);
+                this.showToast(`花費 30 兩拜訪 ${this.state.npcs[npcKey].name}，好感度 +10！`, true);
+                this.updateUI();
+                this.renderNPCs();
+            }
+
+            renderInventory() {
+                const grid = document.getElementById('inventory-grid');
+                const count = document.getElementById('inv-count');
+                grid.innerHTML = '';
+                count.innerText = `容量: ${this.state.inventory.length}`;
+
+                this.state.inventory.forEach(id => {
+                    const item = ITEMS_DB[id];
+                    if (!item) return;
+                    const el = document.createElement('div');
+                    el.style.cssText = 'background:rgba(0,0,0,0.6); border:1px solid var(--gold-dark); border-radius:4px; padding:6px; text-align:center; cursor:pointer;';
+                    el.innerHTML = `
+                        <div style="font-size:22px;">${item.icon}</div>
+                        <div style="font-size:11px; font-weight:bold; color:var(--gold-light);">${item.name}</div>
+                    `;
+                    el.onclick = () => {
+                        if (item.effect) {
+                            for (let k in item.effect) {
+                                this.state.stats[k] = (this.state.stats[k] || 0) + item.effect[k];
+                            }
+                            this.state.inventory = this.state.inventory.filter(i => i !== id);
+                            this.showToast(`使用了【${item.name}】！`, true);
+                            this.updateUI();
+                            this.renderInventory();
+                        } else {
+                            this.showToast(`【${item.name}】: ${item.desc}`, true);
+                        }
+                    };
+                    grid.appendChild(el);
+                });
+
+                this.renderRecipes();
+            }
+
+            renderRecipes() {
+                const recipesBox = document.getElementById('alchemy-recipes');
+                recipesBox.innerHTML = `
+                    <div style="background:rgba(0,0,0,0.5); padding:8px; border-radius:4px; border:1px solid rgba(212,175,55,0.2);">
+                        <div style="font-size:12px; font-weight:bold; color:var(--gold-light);">🪞 珍珠養顏膏</div>
+                        <div style="font-size:10px; color:var(--text-muted);">配方: 南海珍珠粉 x1</div>
+                        <button onclick="game.craftRecipe('yangyangao', ['zhenzhufen'])" class="btn-palace" style="padding:2px 8px; font-size:10px; margin-top:4px;">煉製</button>
+                    </div>
+                    <div style="background:rgba(0,0,0,0.5); padding:8px; border-radius:4px; border:1px solid rgba(212,175,55,0.2);">
+                        <div style="font-size:12px; font-weight:bold; color:var(--gold-light);">🧪 百草避毒丸</div>
+                        <div style="font-size:10px; color:var(--text-muted);">配方: 藏紅花 x1</div>
+                        <button onclick="game.craftRecipe('bidudan', ['canghonghua'])" class="btn-palace" style="padding:2px 8px; font-size:10px; margin-top:4px;">煉製</button>
+                    </div>
+                `;
+            }
+
+            craftRecipe(outId, reqItems) {
+                let hasAll = reqItems.every(i => this.state.inventory.includes(i));
+                if (!hasAll) {
+                    this.showToast('藥材不足，無法煉製！', false);
+                    return;
+                }
+                reqItems.forEach(i => {
+                    const idx = this.state.inventory.indexOf(i);
+                    if (idx > -1) this.state.inventory.splice(idx, 1);
+                });
+                this.state.inventory.push(outId);
+                this.showToast(`成功煉製珍品【${ITEMS_DB[outId].name}】！`, true);
+                this.renderInventory();
+            }
+
+            /* Mini-game Dungeons */
+            startGardenNight() {
+                this.audio.playClick();
+                const events = [
+                    { t: '遇見皇上獨自賞月，對詩獲得寵愛+15！', eff: { chongai: 15 } },
+                    { t: '拾得宮女遺落的白銀 50 兩！', eff: { silver: 50 } },
+                    { t: '撞見華貴妃與侍衛密謀，獲取心機+10！', eff: { xinjie: 10 } },
+                    { t: '夜涼如水不慎受涼，健康 -10。', eff: { health: -10 } }
+                ];
+                const res = events[Math.floor(Math.random() * events.length)];
+                if (res.eff.silver) this.state.silver += res.eff.silver;
+                for (let k in res.eff) {
+                    if (k !== 'silver') this.state.stats[k] = Math.max(0, (this.state.stats[k] || 0) + res.eff[k]);
+                }
+                this.showToast(`🌙 夜巡奇遇：${res.t}`, true);
+                this.updateUI();
+            }
+
+            startColdPalaceInvestigate() {
+                this.audio.playClick();
+                if (this.state.inventory.includes('mihan')) {
+                    this.showToast('已搜獲【前朝密函】，無須重複搜查！', false);
+                    return;
+                }
+                this.state.inventory.push('mihan');
+                this.showToast('🔍 深入冷宮廢墟搜查，獲得關鍵道具【前朝密函】！', true);
+                this.renderInventory();
+            }
+
+            startBanquetRiddles() {
+                this.audio.playClick();
+                const q = POETRY_QUIZ[Math.floor(Math.random() * POETRY_QUIZ.length)];
+                const userAns = prompt(`${q.q}\n選項: ${q.opts.map((o, i) => `\n${i+1}. ${o}`).join('')}`);
+                if (userAns && parseInt(userAns) === q.ans + 1) {
+                    this.state.silver += 80;
+                    this.state.stats.chongai += 10;
+                    this.showToast('🎉 對答如流！皇上龍顏大悅，賞白銀 80 兩，寵愛+10！', true);
+                } else {
+                    this.showToast('答錯了，未能獲取賞賜。', false);
+                }
+                this.updateUI();
+            }
+
+            renderLogs() {
+                const box = document.getElementById('logs-container');
+                box.innerHTML = '';
+                this.state.historyLogs.slice().reverse().forEach(log => {
+                    const item = document.createElement('div');
+                    item.style.cssText = 'padding:6px; border-bottom:1px solid rgba(212,175,55,0.15);';
+                    item.innerHTML = `<span style="color:var(--gold-primary); font-weight:bold;">[${log.chapter}]</span> ${log.text}`;
+                    box.appendChild(item);
+                });
+            }
+
+            showEndingModal(scene) {
+                const modal = document.getElementById('modal-ending');
+                document.getElementById('ending-title').innerText = scene.title;
+                document.getElementById('ending-badge').innerText = scene.badge;
+                document.getElementById('ending-desc').innerText = scene.desc;
+                modal.classList.remove('hidden');
+                this.audio.playChime(true);
+            }
+
+            /* Save / Load System */
+            openSaveModal() {
+                this.audio.playClick();
+                const modal = document.getElementById('modal-saveload');
+                const slotsBox = document.getElementById('save-slots');
+                slotsBox.innerHTML = '';
+
+                for (let i = 1; i <= 3; i++) {
+                    const saved = localStorage.getItem(`palace_save_slot_${i}`);
+                    const data = saved ? JSON.parse(saved) : null;
+                    const slotEl = document.createElement('div');
+                    slotEl.style.cssText = 'background:rgba(0,0,0,0.6); padding:8px; border:1px solid var(--gold-dark); border-radius:4px; display:flex; justify-content:space-between; align-items:center;';
+                    slotEl.innerHTML = `
+                        <div>
+                            <div style="font-size:12px; font-weight:bold; color:var(--gold-light);">存檔欄位 ${i}</div>
+                            <div style="font-size:10px; color:var(--text-muted);">${data ? `${RANKS[data.rankIdx]} · ${data.currentSceneId}` : '無存檔數據'}</div>
+                        </div>
+                        <div style="display:flex; gap:4px;">
+                            <button onclick="game.saveToSlot(${i})" class="btn-palace" style="padding:3px 8px; font-size:10px;">💾 儲存</button>
+                            <button onclick="game.loadFromSlot(${i})" class="btn-palace" style="padding:3px 8px; font-size:10px; background:#1b4d3e;" ${!data ? 'disabled' : ''}>📂 讀取</button>
+                        </div>
+                    `;
+                    slotsBox.appendChild(slotEl);
+                }
+
+                modal.classList.remove('hidden');
+            }
+
+            saveToSlot(slot) {
+                localStorage.setItem(`palace_save_slot_${slot}`, JSON.stringify(this.state));
+                this.showToast(`進度已成功儲存至欄位 ${slot}！`, true);
+                this.openSaveModal();
+            }
+
+            loadFromSlot(slot) {
+                const saved = localStorage.getItem(`palace_save_slot_${slot}`);
+                if (saved) {
+                    this.state = JSON.parse(saved);
+                    this.updateUI();
+                    this.loadScene(this.state.currentSceneId);
+                    this.closeModals();
+                    this.showToast(`成功讀取欄位 ${slot} 存檔！`, true);
+                }
+            }
+
+            exportSaveData() {
+                const str = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.state));
+                const anchor = document.createElement('a');
+                anchor.setAttribute("href", str);
+                anchor.setAttribute("download", `palace_save_${Date.now()}.json`);
+                document.body.appendChild(anchor);
+                anchor.click();
+                anchor.remove();
+            }
+
+            importSaveData() {
+                const jsonStr = prompt("請貼上匯出的 JSON 存檔代碼：");
+                if (jsonStr) {
+                    try {
+                        this.state = JSON.parse(jsonStr);
+                        this.updateUI();
+                        this.loadScene(this.state.currentSceneId);
+                        this.closeModals();
+                        this.showToast("成功匯入外部存檔！", true);
+                    } catch (e) {
+                        this.showToast("無效的存檔代碼！", false);
+                    }
+                }
+            }
+
+            closeModals() {
+                document.querySelectorAll('.modal-overlay').forEach(m => m.classList.add('hidden'));
+            }
+
+            restartGame() {
+                this.closeModals();
+                this.state = {
+                    rankIdx: 0,
+                    silver: 100,
+                    stats: { xinjie: 20, chongai: 20, shili: 20, renxin: 30, health: 100, heihua: 0 },
+                    inventory: ['canghonghua', 'zhenzhufen'],
+                    npcs: JSON.parse(JSON.stringify(NPCS_DB)),
+                    currentSceneId: 's_origin',
+                    historyLogs: [],
+                    activeTab: 'story'
+                };
+                this.init();
+                this.showToast("已重新開始宮鬥新局！", true);
+            }
+        }
+
+        // Initialize Game Instance on Window Load
+        let game;
+        window.onload = function () {
+            game = new PalaceGameController();
+            game.init();
+        };
+    </script>
+</body>
+</html>
